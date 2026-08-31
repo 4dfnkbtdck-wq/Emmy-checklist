@@ -1,8 +1,6 @@
 (function () {
   "use strict";
 
-  const STORAGE_SEEN = "emmy-checklist:seen"; // flat per-entry seen (no season data)
-  const STORAGE_EPISODES = "emmy-checklist:episodes"; // per-episode seen
   const STORAGE_CATEGORY = "emmy-checklist:category";
   const STORAGE_SORT = "emmy-checklist:sort";
   const STORAGE_EXPANDED = "emmy-checklist:expanded";
@@ -24,14 +22,25 @@
   let searchTerm = "";
   let expandedShows = new Set(loadJson(STORAGE_EXPANDED, []));
 
-  function loadJson(key, fallback) {
-    try {
-      const v = JSON.parse(localStorage.getItem(key));
-      return v == null ? fallback : v;
-    } catch (e) {
-      return fallback;
+  // Deep link support (e.g. from the "Still To Watch" page): ?cat=drama&search=Show+Name
+  // selects that category, pre-fills the search box, and — if it's an
+  // unambiguous match — expands that show right away.
+  (function applyDeepLink() {
+    const params = new URLSearchParams(location.search);
+    const cat = params.get("cat");
+    const search = params.get("search");
+    if (cat && EMMY_CATEGORIES.some((c) => c.id === cat)) {
+      currentCategoryId = cat;
+      localStorage.setItem(STORAGE_CATEGORY, currentCategoryId);
     }
-  }
+    if (search) {
+      searchTerm = search;
+      const matches = getCategory(currentCategoryId).winners.filter((e) => e.show === search);
+      if (matches.length) {
+        expandedShows.add(showKey(currentCategoryId, seasonLookupKey(matches[0])));
+      }
+    }
+  })();
 
   function saveFlat() {
     localStorage.setItem(STORAGE_SEEN, JSON.stringify(seenFlat));
@@ -45,49 +54,9 @@
     localStorage.setItem(STORAGE_EXPANDED, JSON.stringify(Array.from(expandedShows)));
   }
 
-  function flatKey(categoryId, entry) {
-    return categoryId + ":" + entry.year;
-  }
-
-  // Most entries look up their season/movie data by their own display
-  // title. A few (e.g. American Crime Story's per-installment titles)
-  // share one underlying record via an explicit "seasonsKey" so the
-  // franchise's seasons/movies aren't duplicated per winning entry.
-  function seasonLookupKey(entry) {
-    return entry.seasonsKey || entry.show;
-  }
-
-  function showKey(categoryId, lookupKey) {
-    return categoryId + ":" + lookupKey;
-  }
-
-  function episodeKey(categoryId, lookupKey, seasonIdx, epIdx) {
-    return categoryId + ":" + lookupKey + ":s" + seasonIdx + ":e" + epIdx;
-  }
-
-  function movieKey(categoryId, lookupKey, movieIdx) {
-    return categoryId + ":" + lookupKey + ":movie:" + movieIdx;
-  }
-
-  function spinoffEpisodeKey(categoryId, lookupKey, spinoffIdx, seasonIdx, epIdx) {
-    return categoryId + ":" + lookupKey + ":spinoff:" + spinoffIdx + ":s" + seasonIdx + ":e" + epIdx;
-  }
-
-  function getCategory(id) {
-    return EMMY_CATEGORIES.find((c) => c.id === id) || EMMY_CATEGORIES[0];
-  }
-
-  function getSeasons(lookupKey) {
-    return typeof SHOW_SEASONS !== "undefined" ? SHOW_SEASONS[lookupKey] : undefined;
-  }
-
-  function getMovies(lookupKey) {
-    return typeof SHOW_MOVIES !== "undefined" ? SHOW_MOVIES[lookupKey] : undefined;
-  }
-
-  function getSpinoffs(lookupKey) {
-    return typeof SHOW_SPINOFFS !== "undefined" ? SHOW_SPINOFFS[lookupKey] : undefined;
-  }
+  // flatKey, seasonLookupKey, showKey, episodeKey, movieKey,
+  // spinoffEpisodeKey, getCategory, getSeasons, getMovies, getSpinoffs,
+  // and episodeStats all live in js/shared.js, loaded before this file.
 
   // Builds one season's header (with a mark-whole-season-seen button)
   // plus its episode-chip grid. keyFn(episodeNumber) must return that
@@ -187,21 +156,6 @@
     return '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   }
 
-  // Episode counting for a show: how many total / seen.
-  function episodeStats(categoryId, lookupKey) {
-    const seasons = getSeasons(lookupKey);
-    if (!seasons) return null;
-    let total = 0;
-    let seenCount = 0;
-    seasons.forEach((count, sIdx) => {
-      for (let e = 1; e <= count; e++) {
-        total++;
-        if (seenEpisodes[episodeKey(categoryId, lookupKey, sIdx, e)]) seenCount++;
-      }
-    });
-    return { total, seen: seenCount };
-  }
-
   function setShowFullySeen(categoryId, lookupKey, value) {
     const seasons = getSeasons(lookupKey);
     if (!seasons) return;
@@ -254,7 +208,7 @@
       let isSeen, isPartial;
       let stats = null;
       if (seasons) {
-        stats = episodeStats(cat.id, lookupKey);
+        stats = episodeStats(cat.id, lookupKey, seenEpisodes);
         isSeen = stats.total > 0 && stats.seen === stats.total;
         isPartial = stats.seen > 0 && !isSeen;
       } else {
@@ -469,7 +423,7 @@
       const lookupKey = seasonLookupKey(e);
       const seasons = getSeasons(lookupKey);
       if (seasons) {
-        const stats = episodeStats(cat.id, lookupKey);
+        const stats = episodeStats(cat.id, lookupKey, seenEpisodes);
         if (stats.total > 0 && stats.seen === stats.total) seenCount++;
       } else if (seenFlat[flatKey(cat.id, e)]) {
         seenCount++;
@@ -525,5 +479,6 @@
   });
 
   sortToggle.textContent = sortNewestFirst ? "Newest First" : "Oldest First";
+  searchInput.value = searchTerm;
   render();
 })();

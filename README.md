@@ -35,6 +35,11 @@ It also works as-is on GitHub Pages (Settings → Pages → deploy from the
 5. **Newest First / Oldest First** flips the sort order.
 6. **Mark All Seen** / **Clear All** apply to every episode (and, for
    TV Movie, every entry) in the currently selected category.
+7. **Still To Watch** (top-right link) opens `unwatched.html`, a
+   read-only overview of everything not yet fully checked off across
+   all four categories, one page, grouped by category. Tap anything
+   there to jump straight to it on the main page, already searched for
+   and expanded.
 
 Nothing is synced anywhere — checkmarks live only in the browser you
 made them in (`localStorage`).
@@ -82,6 +87,15 @@ made them in (`localStorage`).
   mentioned in the spin-off's `note` but isn't a checkable item yet.
 
 Corrections are just edits to the arrays/objects in `js/data.js`.
+
+## Files
+
+- `index.html` / `js/app.js` — the main checklist.
+- `unwatched.html` / `js/unwatched.js` — the "Still To Watch" overview.
+- `js/shared.js` — data-lookup and localStorage helpers used by both
+  pages (loaded after `data.js`, before either page's own script).
+- `js/data.js` — all the winner/season/movie/spin-off data, above.
+- `css/styles.css` — shared styling for both pages.
 
 ---
 
