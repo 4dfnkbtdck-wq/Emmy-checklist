@@ -210,7 +210,7 @@ const SHOW_SEASONS = {
   "The Marvelous Mrs. Maisel": [8, 10, 8, 8, 9],
   "Fleabag": [6, 6],
   "Schitt's Creek": [13, 13, 13, 12, 14, 14],
-  "Ted Lasso": [10, 12, 12],
+  "Ted Lasso": [10, 12, 12, 10], // S4 premiered Aug 2026, weekly through Oct 2026
   "The Bear": [8, 10, 10, 10],
   "Hacks": [10, 8, 9, 10, 10],
   "The Studio": [10],
