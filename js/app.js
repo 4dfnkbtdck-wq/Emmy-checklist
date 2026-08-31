@@ -272,21 +272,38 @@
           const block = document.createElement("div");
           block.className = "season-block";
 
+          const seasonAllSeen = seasonSeen === count && count > 0;
+          const seasonPartial = seasonSeen > 0 && !seasonAllSeen;
+
           const header = document.createElement("div");
           header.className = "season-header";
+          header.setAttribute("role", "checkbox");
+          header.setAttribute("aria-checked", String(seasonAllSeen));
+
+          const textWrap = document.createElement("span");
+          textWrap.className = "season-header-text";
           const title = document.createElement("span");
           title.className = "season-header-title";
           title.textContent = "Season " + (sIdx + 1);
           const countEl = document.createElement("span");
           countEl.className = "season-header-count";
           countEl.textContent = seasonSeen + " / " + count;
-          header.appendChild(title);
-          header.appendChild(countEl);
+          textWrap.appendChild(title);
+          textWrap.appendChild(countEl);
+
+          const seasonCheck = document.createElement("span");
+          seasonCheck.className =
+            "winner-check season-check" +
+            (seasonAllSeen ? " checked" : seasonPartial ? " partial" : "");
+          seasonCheck.title = seasonAllSeen ? "Mark season unseen" : "Mark whole season seen";
+          seasonCheck.innerHTML = checkIconSvg();
+
+          header.appendChild(textWrap);
+          header.appendChild(seasonCheck);
           header.addEventListener("click", () => {
-            const allSeen = seasonSeen === count;
             for (let e = 1; e <= count; e++) {
               const key = episodeKey(cat.id, lookupKey, sIdx, e);
-              if (allSeen) delete seenEpisodes[key];
+              if (seasonAllSeen) delete seenEpisodes[key];
               else seenEpisodes[key] = true;
             }
             saveEpisodes();
