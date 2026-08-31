@@ -296,6 +296,18 @@ const SHOW_MOVIES = {
 // later, unreleased seasons are noted but not listed as checkable).
 // Keyed by the same "show" string used above.
 const SHOW_SPINOFFS = {
+  "The Pacific": [
+    {
+      title: "Band of Brothers",
+      seasons: [10],
+      note: "Companion series (HBO, 2001), the first of the Hanks/Spielberg WWII trilogy. Not a direct narrative sequel/prequel — different unit (the Army's Easy Company vs. The Pacific's Marines), different characters — but same producers and premise; their timelines briefly cross at D-Day. Complete.",
+    },
+    {
+      title: "Masters of the Air",
+      seasons: [9],
+      note: "Companion series (Apple TV+, 2024), the third of the Hanks/Spielberg WWII trilogy, following the Army Air Forces' 100th Bomb Group. Also not a direct narrative sequel/prequel to The Pacific. Complete.",
+    },
+  ],
   "Breaking Bad": [
     {
       title: "Better Call Saul",
