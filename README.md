@@ -57,7 +57,7 @@ made them in (`localStorage`).
 
 ## Data and its confidence
 
-`js/data.js` has three pieces:
+`js/data.js` has four pieces:
 
 - `EMMY_CATEGORIES` — the winner lists themselves: `{ year, show,
   wonSeason }` per entry. Sourced primarily from a year-by-year
@@ -67,9 +67,19 @@ made them in (`localStorage`).
   Verified via multiple searches per show; long-running shows with
   irregular season lengths (`Cheers`, `Frasier`, `Modern Family`, etc.)
   are the likeliest spot for a stray off-by-one.
-- `SHOW_MOVIES` — tie-in feature films connected to a show. Only real,
-  released titles are listed; every show in the checklist was checked
-  for one and most have none.
+- `SHOW_MOVIES` — tie-in feature films and standalone bonus episodes
+  connected to a show. Only real, released titles are listed; every
+  show in the checklist was checked for one and most have none. Not
+  every "related movie" qualifies — e.g. the 2009 *Watchmen* film is a
+  separate, unconnected adaptation of the same source material as the
+  2019 HBO series, not an actual tie-in, so it's deliberately excluded.
+- `SHOW_SPINOFFS` — full separate series in the same continuity as a
+  winning show (e.g. *Better Call Saul* under *Breaking Bad*, *House of
+  the Dragon* and *A Knight of the Seven Kingdoms* under *Game of
+  Thrones*). Unlike `SHOW_MOVIES`, each spin-off carries its own
+  `seasons` array and gets its own nested season/episode checklist. Only
+  real, released seasons are listed — an unreleased next season is
+  mentioned in the spin-off's `note` but isn't a checkable item yet.
 
 Corrections are just edits to the arrays/objects in `js/data.js`.
 

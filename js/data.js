@@ -285,3 +285,38 @@ const SHOW_MOVIES = {
     },
   ],
 };
+
+// SHOW_SPINOFFS: full separate series set in the same continuity as a
+// winning show (prequels, sequels) — unlike SHOW_MOVIES, each of these
+// has its own season/episode breakdown, rendered as its own nested
+// checklist. Only real, released spin-offs go here (a spin-off's own
+// later, unreleased seasons are noted but not listed as checkable).
+// Keyed by the same "show" string used above.
+const SHOW_SPINOFFS = {
+  "Breaking Bad": [
+    {
+      title: "Better Call Saul",
+      seasons: [10, 10, 10, 10, 10, 13],
+      note: "Prequel series (AMC, 2015-2022) following Jimmy McGill's transformation into Saul Goodman. Complete.",
+    },
+  ],
+  "The Handmaid's Tale": [
+    {
+      title: "The Testaments",
+      seasons: [10],
+      note: "Sequel series (Hulu, 2026-), adapting Margaret Atwood's sequel novel, set ~15 years after The Handmaid's Tale. Renewed for a Season 2, not yet released.",
+    },
+  ],
+  "Game of Thrones": [
+    {
+      title: "House of the Dragon",
+      seasons: [10, 8, 8],
+      note: "Prequel series (HBO, 2022-present) set ~200 years before Game of Thrones, covering the Targaryen civil war. Ongoing.",
+    },
+    {
+      title: "A Knight of the Seven Kingdoms",
+      seasons: [6],
+      note: "Prequel series (HBO, 2026-present) set ~100 years before Game of Thrones. Renewed for a Season 2 (2027), not yet released.",
+    },
+  ],
+};

@@ -69,6 +69,10 @@
     return categoryId + ":" + lookupKey + ":movie:" + movieIdx;
   }
 
+  function spinoffEpisodeKey(categoryId, lookupKey, spinoffIdx, seasonIdx, epIdx) {
+    return categoryId + ":" + lookupKey + ":spinoff:" + spinoffIdx + ":s" + seasonIdx + ":e" + epIdx;
+  }
+
   function getCategory(id) {
     return EMMY_CATEGORIES.find((c) => c.id === id) || EMMY_CATEGORIES[0];
   }
@@ -79,6 +83,81 @@
 
   function getMovies(lookupKey) {
     return typeof SHOW_MOVIES !== "undefined" ? SHOW_MOVIES[lookupKey] : undefined;
+  }
+
+  function getSpinoffs(lookupKey) {
+    return typeof SHOW_SPINOFFS !== "undefined" ? SHOW_SPINOFFS[lookupKey] : undefined;
+  }
+
+  // Builds one season's header (with a mark-whole-season-seen button)
+  // plus its episode-chip grid. keyFn(episodeNumber) must return that
+  // episode's storage key — shared by the main show's seasons and any
+  // nested spin-off's seasons.
+  function buildSeasonBlock(label, count, keyFn) {
+    let seasonSeen = 0;
+    for (let e = 1; e <= count; e++) {
+      if (seenEpisodes[keyFn(e)]) seasonSeen++;
+    }
+    const seasonAllSeen = seasonSeen === count && count > 0;
+    const seasonPartial = seasonSeen > 0 && !seasonAllSeen;
+
+    const block = document.createElement("div");
+    block.className = "season-block";
+
+    const header = document.createElement("div");
+    header.className = "season-header";
+    header.setAttribute("role", "checkbox");
+    header.setAttribute("aria-checked", String(seasonAllSeen));
+
+    const textWrap = document.createElement("span");
+    textWrap.className = "season-header-text";
+    const title = document.createElement("span");
+    title.className = "season-header-title";
+    title.textContent = label;
+    const countEl = document.createElement("span");
+    countEl.className = "season-header-count";
+    countEl.textContent = seasonSeen + " / " + count;
+    textWrap.appendChild(title);
+    textWrap.appendChild(countEl);
+
+    const seasonCheck = document.createElement("span");
+    seasonCheck.className =
+      "winner-check season-check" + (seasonAllSeen ? " checked" : seasonPartial ? " partial" : "");
+    seasonCheck.title = seasonAllSeen ? "Mark season unseen" : "Mark whole season seen";
+    seasonCheck.innerHTML = checkIconSvg();
+
+    header.appendChild(textWrap);
+    header.appendChild(seasonCheck);
+    header.addEventListener("click", () => {
+      for (let e = 1; e <= count; e++) {
+        const key = keyFn(e);
+        if (seasonAllSeen) delete seenEpisodes[key];
+        else seenEpisodes[key] = true;
+      }
+      saveEpisodes();
+      render();
+    });
+    block.appendChild(header);
+
+    const grid = document.createElement("div");
+    grid.className = "episode-grid";
+    for (let e = 1; e <= count; e++) {
+      const key = keyFn(e);
+      const chip = document.createElement("span");
+      chip.className = "episode-chip" + (seenEpisodes[key] ? " seen" : "");
+      chip.textContent = e;
+      chip.title = label + " · E" + e;
+      chip.addEventListener("click", () => {
+        if (seenEpisodes[key]) delete seenEpisodes[key];
+        else seenEpisodes[key] = true;
+        saveEpisodes();
+        render();
+      });
+      grid.appendChild(chip);
+    }
+    block.appendChild(grid);
+
+    return block;
   }
 
   function buildSegmented() {
@@ -264,73 +343,66 @@
         panel.className = "seasons-panel";
 
         seasons.forEach((count, sIdx) => {
-          let seasonSeen = 0;
-          for (let e = 1; e <= count; e++) {
-            if (seenEpisodes[episodeKey(cat.id, lookupKey, sIdx, e)]) seasonSeen++;
-          }
-
-          const block = document.createElement("div");
-          block.className = "season-block";
-
-          const seasonAllSeen = seasonSeen === count && count > 0;
-          const seasonPartial = seasonSeen > 0 && !seasonAllSeen;
-
-          const header = document.createElement("div");
-          header.className = "season-header";
-          header.setAttribute("role", "checkbox");
-          header.setAttribute("aria-checked", String(seasonAllSeen));
-
-          const textWrap = document.createElement("span");
-          textWrap.className = "season-header-text";
-          const title = document.createElement("span");
-          title.className = "season-header-title";
-          title.textContent = "Season " + (sIdx + 1);
-          const countEl = document.createElement("span");
-          countEl.className = "season-header-count";
-          countEl.textContent = seasonSeen + " / " + count;
-          textWrap.appendChild(title);
-          textWrap.appendChild(countEl);
-
-          const seasonCheck = document.createElement("span");
-          seasonCheck.className =
-            "winner-check season-check" +
-            (seasonAllSeen ? " checked" : seasonPartial ? " partial" : "");
-          seasonCheck.title = seasonAllSeen ? "Mark season unseen" : "Mark whole season seen";
-          seasonCheck.innerHTML = checkIconSvg();
-
-          header.appendChild(textWrap);
-          header.appendChild(seasonCheck);
-          header.addEventListener("click", () => {
-            for (let e = 1; e <= count; e++) {
-              const key = episodeKey(cat.id, lookupKey, sIdx, e);
-              if (seasonAllSeen) delete seenEpisodes[key];
-              else seenEpisodes[key] = true;
-            }
-            saveEpisodes();
-            render();
-          });
-          block.appendChild(header);
-
-          const grid = document.createElement("div");
-          grid.className = "episode-grid";
-          for (let e = 1; e <= count; e++) {
-            const key = episodeKey(cat.id, lookupKey, sIdx, e);
-            const chip = document.createElement("span");
-            chip.className = "episode-chip" + (seenEpisodes[key] ? " seen" : "");
-            chip.textContent = e;
-            chip.title = "S" + (sIdx + 1) + "E" + e;
-            chip.addEventListener("click", () => {
-              if (seenEpisodes[key]) delete seenEpisodes[key];
-              else seenEpisodes[key] = true;
-              saveEpisodes();
-              render();
-            });
-            grid.appendChild(chip);
-          }
-          block.appendChild(grid);
-
-          panel.appendChild(block);
+          panel.appendChild(
+            buildSeasonBlock("Season " + (sIdx + 1), count, (e) =>
+              episodeKey(cat.id, lookupKey, sIdx, e)
+            )
+          );
         });
+
+        const spinoffs = getSpinoffs(lookupKey);
+        if (spinoffs && spinoffs.length) {
+          const spinoffsBlock = document.createElement("div");
+          spinoffsBlock.className = "season-block spinoffs-block";
+
+          const spinoffsHeading = document.createElement("div");
+          spinoffsHeading.className = "season-header-title movies-heading";
+          spinoffsHeading.textContent = "Spin-offs";
+          spinoffsBlock.appendChild(spinoffsHeading);
+
+          spinoffs.forEach((spinoff, spIdx) => {
+            let spTotal = 0;
+            let spSeen = 0;
+            spinoff.seasons.forEach((count, sIdx) => {
+              for (let e = 1; e <= count; e++) {
+                spTotal++;
+                if (seenEpisodes[spinoffEpisodeKey(cat.id, lookupKey, spIdx, sIdx, e)]) spSeen++;
+              }
+            });
+
+            const spinoffItem = document.createElement("div");
+            spinoffItem.className = "spinoff-item";
+
+            const spinoffTitleEl = document.createElement("div");
+            spinoffTitleEl.className = "spinoff-title";
+            spinoffTitleEl.textContent = spinoff.title;
+            spinoffItem.appendChild(spinoffTitleEl);
+
+            const spinoffProgress = document.createElement("div");
+            spinoffProgress.className = "movie-note spinoff-progress";
+            spinoffProgress.textContent = spSeen + " of " + spTotal + " episodes seen";
+            spinoffItem.appendChild(spinoffProgress);
+
+            if (spinoff.note) {
+              const noteEl = document.createElement("div");
+              noteEl.className = "movie-note";
+              noteEl.textContent = spinoff.note;
+              spinoffItem.appendChild(noteEl);
+            }
+
+            spinoff.seasons.forEach((count, sIdx) => {
+              spinoffItem.appendChild(
+                buildSeasonBlock("Season " + (sIdx + 1), count, (e) =>
+                  spinoffEpisodeKey(cat.id, lookupKey, spIdx, sIdx, e)
+                )
+              );
+            });
+
+            spinoffsBlock.appendChild(spinoffItem);
+          });
+
+          panel.appendChild(spinoffsBlock);
+        }
 
         const movies = getMovies(lookupKey);
         if (movies && movies.length) {
