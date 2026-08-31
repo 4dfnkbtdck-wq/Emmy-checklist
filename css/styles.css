@@ -566,6 +566,20 @@ body {
   line-height: 1.25;
 }
 
+.unwatched-tag {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 6px;
+  background: var(--track-bg);
+  color: var(--label-secondary);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+}
+
 .unwatched-meta {
   font-size: 0.8rem;
   color: var(--label-tertiary);

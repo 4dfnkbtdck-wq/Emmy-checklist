@@ -7,12 +7,21 @@
   const summaryEl = document.getElementById("unwatched-summary");
   const groupsEl = document.getElementById("unwatched-groups");
 
+  // Every row this category can produce: the main show/movie entries,
+  // plus — separately — each show's spin-offs and tie-in movies/extras.
+  // A spin-off or extra is listed even when its parent show is fully
+  // watched (e.g. Band of Brothers under an already-finished Pacific),
+  // since it's still its own thing to watch.
+  //
   // Shows with season data can appear more than once (e.g. Modern
-  // Family's five wins) — collapse those to one row. Flat entries (most
-  // TV movies) are already one row per year.
+  // Family's five wins) — collapse those to one row, and only look at
+  // their spin-offs/extras once. Flat entries (most TV movies) are
+  // already one row per year.
   function buildRows(cat) {
     const bySeasonKey = new Map();
     const flatRows = [];
+    const extraRows = [];
+    const processedForExtras = new Set();
 
     cat.winners.forEach((entry) => {
       const lookupKey = seasonLookupKey(entry);
@@ -35,6 +44,47 @@
           isSeen: !!seenFlat[flatKey(cat.id, entry)],
         });
       }
+
+      if (!processedForExtras.has(lookupKey)) {
+        processedForExtras.add(lookupKey);
+
+        const spinoffs = getSpinoffs(lookupKey);
+        if (spinoffs) {
+          spinoffs.forEach((spinoff, spIdx) => {
+            let total = 0;
+            let seenCount = 0;
+            spinoff.seasons.forEach((count, sIdx) => {
+              for (let e = 1; e <= count; e++) {
+                total++;
+                if (seenEpisodes[spinoffEpisodeKey(cat.id, lookupKey, spIdx, sIdx, e)]) seenCount++;
+              }
+            });
+            extraRows.push({
+              title: spinoff.title,
+              parentTitle: entry.show,
+              tag: "Spin-off",
+              years: [entry.year],
+              stats: { total, seen: seenCount },
+              isSeen: total > 0 && seenCount === total,
+            });
+          });
+        }
+
+        const movies = getMovies(lookupKey);
+        if (movies) {
+          movies.forEach((movie, mIdx) => {
+            const key = movieKey(cat.id, lookupKey, mIdx);
+            extraRows.push({
+              title: movie.title,
+              parentTitle: entry.show,
+              tag: "Extra",
+              years: [entry.year],
+              stats: null,
+              isSeen: !!seenEpisodes[key],
+            });
+          });
+        }
+      }
     });
 
     const seasonRows = Array.from(bySeasonKey.values()).map((row) => ({
@@ -42,7 +92,7 @@
       isSeen: row.stats.total > 0 && row.stats.seen === row.stats.total,
     }));
 
-    return seasonRows.concat(flatRows);
+    return seasonRows.concat(flatRows).concat(extraRows);
   }
 
   function render() {
@@ -79,8 +129,9 @@
           const li = document.createElement("li");
           const a = document.createElement("a");
           a.className = "unwatched-row";
+          const searchTitle = row.parentTitle || row.title;
           a.href =
-            "index.html?cat=" + encodeURIComponent(cat.id) + "&search=" + encodeURIComponent(row.title);
+            "index.html?cat=" + encodeURIComponent(cat.id) + "&search=" + encodeURIComponent(searchTitle);
 
           const info = document.createElement("span");
           info.className = "unwatched-info";
@@ -88,15 +139,28 @@
           const titleEl = document.createElement("div");
           titleEl.className = "unwatched-title";
           titleEl.textContent = row.title;
+          if (row.tag) {
+            const tagEl = document.createElement("span");
+            tagEl.className = "unwatched-tag";
+            tagEl.textContent = row.tag;
+            titleEl.appendChild(tagEl);
+          }
           info.appendChild(titleEl);
 
-          const years = row.years.slice().sort((x, y) => x - y);
-          const wonText = "Won " + years.join(", ");
           const metaEl = document.createElement("div");
           metaEl.className = "unwatched-meta";
-          metaEl.textContent = row.stats
-            ? wonText + " · " + row.stats.seen + " of " + row.stats.total + " episodes seen"
-            : wonText + " · Not seen";
+          if (row.parentTitle) {
+            const fromText = "From " + row.parentTitle;
+            metaEl.textContent = row.stats
+              ? fromText + " · " + row.stats.seen + " of " + row.stats.total + " episodes seen"
+              : fromText + " · Not seen";
+          } else {
+            const years = row.years.slice().sort((x, y) => x - y);
+            const wonText = "Won " + years.join(", ");
+            metaEl.textContent = row.stats
+              ? wonText + " · " + row.stats.seen + " of " + row.stats.total + " episodes seen"
+              : wonText + " · Not seen";
+          }
           info.appendChild(metaEl);
 
           const chevron = document.createElement("span");
