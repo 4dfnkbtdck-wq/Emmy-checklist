@@ -267,6 +267,11 @@ const SHOW_MOVIES = {
   ],
   "Sherlock": [
     {
+      title: "Many Happy Returns",
+      year: 2013,
+      note: "7-minute BBC mini-episode, not part of the numbered series. A prequel to Series 3; watch it after Series 2, right before Series 3 begins.",
+    },
+    {
       title: "Sherlock: The Abominable Bride",
       year: 2016,
       note: "The actual Emmy-winning TV movie — a 90-minute standalone special, not part of the numbered series. Aired between Series 3 and Series 4; watch it after Series 3.",
