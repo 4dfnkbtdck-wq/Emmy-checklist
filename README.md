@@ -31,7 +31,7 @@ It also works as-is on GitHub Pages (Settings → Pages → deploy from the
    the expanded panel, checked off separately.
 3. **TV Movie**: each entry is a single watch, so it's just a plain
    checkbox — no season/episode breakdown.
-4. **Search** filters by show, year, or network.
+4. **Search** filters by show or year.
 5. **Newest First / Oldest First** flips the sort order.
 6. **Mark All Seen** / **Clear All** apply to every episode (and, for
    TV Movie, every entry) in the currently selected category.
@@ -60,7 +60,7 @@ made them in (`localStorage`).
 `js/data.js` has three pieces:
 
 - `EMMY_CATEGORIES` — the winner lists themselves: `{ year, show,
-  network, wonSeason }` per entry. Sourced primarily from a year-by-year
+  wonSeason }` per entry. Sourced primarily from a year-by-year
   reference the user supplied, cross-checked against general research.
 - `SHOW_SEASONS` — per-show episode counts, one array entry per season,
   covering each show's entire run (not just the season that won).

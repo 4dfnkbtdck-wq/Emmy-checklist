@@ -281,7 +281,7 @@ body {
   color: var(--label-secondary);
 }
 
-.winner-network {
+.winner-meta {
   font-size: 0.8rem;
   color: var(--label-tertiary);
 }

@@ -152,10 +152,7 @@
     const term = searchTerm.trim().toLowerCase();
     if (term) {
       entries = entries.filter(
-        (e) =>
-          e.show.toLowerCase().includes(term) ||
-          String(e.year).includes(term) ||
-          (e.network && e.network.toLowerCase().includes(term))
+        (e) => e.show.toLowerCase().includes(term) || String(e.year).includes(term)
       );
     }
 
@@ -203,14 +200,11 @@
       showEl.textContent = entry.show;
       info.appendChild(showEl);
 
-      const metaBits = [];
-      if (entry.network) metaBits.push(entry.network);
-      if (entry.wonSeason) metaBits.push("won for S" + entry.wonSeason);
-      if (metaBits.length) {
-        const netEl = document.createElement("div");
-        netEl.className = "winner-network";
-        netEl.textContent = metaBits.join(" · ");
-        info.appendChild(netEl);
+      if (entry.wonSeason) {
+        const metaEl = document.createElement("div");
+        metaEl.className = "winner-meta";
+        metaEl.textContent = "Won for S" + entry.wonSeason;
+        info.appendChild(metaEl);
       }
 
       if (stats) {
