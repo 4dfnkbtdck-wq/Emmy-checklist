@@ -204,7 +204,10 @@ const SHOW_SEASONS = {
 
   "Cheers": [22, 22, 25, 26, 26, 25, 22, 26, 26, 25, 28],
   "Seinfeld": [5, 12, 13, 24, 22, 24, 24, 22, 24],
-  "Frasier": [24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24],
+  // S1-11: original run (1993-2004). S12-13: the 2023-2024 Paramount+
+  // revival (same title, Kelsey Grammer reprising the role) - cancelled
+  // after 2 seasons in Jan 2025.
+  "Frasier": [24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 10, 10],
   "Modern Family": [24, 24, 24, 24, 24, 24, 22, 22, 22, 22, 18],
   "Veep": [8, 10, 10, 10, 10, 10, 7],
   "The Marvelous Mrs. Maisel": [8, 10, 8, 8, 9],
