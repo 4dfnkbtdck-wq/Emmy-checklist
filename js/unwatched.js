@@ -34,6 +34,9 @@
             title: entry.show,
             years: [entry.year],
             stats: episodeStats(cat.id, lookupKey, seenEpisodes),
+            next: findNextEpisode(seasons, seenEpisodes, (sIdx, e) =>
+              episodeKey(cat.id, lookupKey, sIdx, e)
+            ),
           });
         }
       } else {
@@ -65,6 +68,9 @@
               tag: "Spin-off",
               years: [entry.year],
               stats: { total, seen: seenCount },
+              next: findNextEpisode(spinoff.seasons, seenEpisodes, (sIdx, e) =>
+                spinoffEpisodeKey(cat.id, lookupKey, spIdx, sIdx, e)
+              ),
               isSeen: total > 0 && seenCount === total,
             });
           });
@@ -162,6 +168,13 @@
               : wonText + " · Not seen";
           }
           info.appendChild(metaEl);
+
+          if (row.next) {
+            const nextEl = document.createElement("div");
+            nextEl.className = "unwatched-next";
+            nextEl.textContent = "Next up: Season " + row.next.season + ", Episode " + row.next.episode;
+            info.appendChild(nextEl);
+          }
 
           const chevron = document.createElement("span");
           chevron.className = "winner-chevron unwatched-chevron";

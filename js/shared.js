@@ -74,3 +74,20 @@ function episodeStats(categoryId, lookupKey, seenEpisodes) {
   });
   return { total, seen: seenCount };
 }
+
+// The first not-yet-seen episode in a seasons array, in watch order
+// (season 1 episode 1, season 1 episode 2, ... season 2 episode 1, ...).
+// keyFn(seasonIdx, episodeNumber) must return that episode's storage
+// key. Returns { season, episode } (1-indexed, for display) or null if
+// every episode is already seen.
+function findNextEpisode(seasons, seenEpisodes, keyFn) {
+  for (let sIdx = 0; sIdx < seasons.length; sIdx++) {
+    const count = seasons[sIdx];
+    for (let e = 1; e <= count; e++) {
+      if (!seenEpisodes[keyFn(sIdx, e)]) {
+        return { season: sIdx + 1, episode: e };
+      }
+    }
+  }
+  return null;
+}

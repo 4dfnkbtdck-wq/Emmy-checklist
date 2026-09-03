@@ -585,6 +585,13 @@ body {
   color: var(--label-tertiary);
 }
 
+.unwatched-next {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  margin-top: 0.1rem;
+}
+
 .unwatched-chevron {
   color: var(--label-tertiary);
 }
