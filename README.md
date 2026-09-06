@@ -18,6 +18,21 @@ python3 -m http.server 8000
 It also works as-is on GitHub Pages (Settings → Pages → deploy from the
 `main` branch, root folder).
 
+## Installing it on your phone
+
+It's a PWA — there's no App Store app, but it installs and behaves like
+one:
+
+- **iPhone (Safari)**: open the site, tap Share, then **Add to Home
+  Screen**.
+- **Android (Chrome)**: open the site, tap the ⋮ menu, then **Add to
+  Home screen** / **Install app**.
+
+Once installed it opens full-screen with its own icon, and a service
+worker caches the app shell so it keeps working with no signal — your
+checkmarks are unaffected either way since they already live in
+`localStorage`, not the network.
+
 ## Using it
 
 1. Switch between categories with the segmented control at the top.
@@ -96,6 +111,13 @@ Corrections are just edits to the arrays/objects in `js/data.js`.
   pages (loaded after `data.js`, before either page's own script).
 - `js/data.js` — all the winner/season/movie/spin-off data, above.
 - `css/styles.css` — shared styling for both pages.
+- `manifest.webmanifest` / `sw.js` / `img/icons/` — what make it
+  installable (see "Installing it on your phone" above). Bump
+  `sw.js`'s `CACHE_VERSION` (and its own copies of the `?v=` URLs) on
+  any deploy that touches `css/js`, the same discipline the `?v=`
+  query strings in `index.html`/`unwatched.html` already follow — an
+  installed icon otherwise keeps serving old files from its offline
+  cache even after those two catch up.
 
 ---
 
