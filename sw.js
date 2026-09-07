@@ -2,18 +2,18 @@
 // content) changes — same discipline as the ?v= query strings the HTML
 // pages use. A new name here makes install() re-fetch everything fresh
 // and activate() drops the old cache instead of leaving it to grow.
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const CACHE_NAME = `emmy-checklist-${CACHE_VERSION}`;
 
 const APP_SHELL = [
   "index.html",
   "unwatched.html",
   "manifest.webmanifest",
-  "css/styles.css?v=2",
-  "js/data.js?v=2",
-  "js/shared.js?v=2",
-  "js/app.js?v=2",
-  "js/unwatched.js?v=2",
+  "css/styles.css?v=3",
+  "js/data.js?v=3",
+  "js/shared.js?v=3",
+  "js/app.js?v=3",
+  "js/unwatched.js?v=3",
   "img/icons/icon-180.png?v=2",
   "img/icons/icon-192.png?v=2",
   "img/icons/icon-512.png?v=2",

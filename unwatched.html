@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Emmy" />
-  <link rel="stylesheet" href="css/styles.css?v=2" />
+  <link rel="stylesheet" href="css/styles.css?v=3" />
 </head>
 <body>
   <div class="navbar">
@@ -40,12 +40,25 @@
        matching tags in index.html) on any deploy that touches css/js —
        GitHub Pages and mobile browsers can otherwise keep serving stale
        cached files after a redeploy. -->
-  <script src="js/data.js?v=2"></script>
-  <script src="js/shared.js?v=2"></script>
-  <script src="js/unwatched.js?v=2"></script>
+  <script src="js/data.js?v=3"></script>
+  <script src="js/shared.js?v=3"></script>
+  <script src="js/unwatched.js?v=3"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").then((reg) => reg.update());
+      });
+      // A new service worker (skipWaiting + clients.claim, both already
+      // in sw.js) takes over silently — without this, an already-open
+      // tab/installed app keeps running the OLD page's JS until the
+      // user manually force-quits and relaunches. Reload once instead,
+      // so updates actually reach anyone with the app already open.
+      let reloadedForNewSw = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (reloadedForNewSw) return;
+        reloadedForNewSw = true;
+        window.location.reload();
+      });
     }
   </script>
 </body>
