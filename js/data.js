@@ -118,7 +118,7 @@ const EMMY_CATEGORIES = [
     id: "tvmovie",
     name: "Best TV Movie",
     short: "TV Movie",
-    note: "Full history back to 1966 (the earliest year with a winner). TV movies are checked off as a single watch — no season/episode breakdown.",
+    note: "Full history back to 1966 (the earliest year with a winner). TV movies are checked off as a single watch — no season/episode breakdown. Starting with the 78th Emmys (2026), the Television Academy renamed this category from \"Outstanding Television Movie\" to \"Outstanding Movie.\"",
     winners: [
       { year: 1966, show: "Ages of Man" },
       { year: 1967, show: "Death of a Salesman" },
@@ -182,6 +182,7 @@ const EMMY_CATEGORIES = [
       { year: 2023, show: "Weird: The Al Yankovic Story" },
       { year: 2024, show: "Quiz Lady" },
       { year: 2025, show: "Rebel Ridge" },
+      { year: 2026, show: "Remarkably Bright Creatures" },
     ],
   },
 ];
