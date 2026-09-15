@@ -56,6 +56,7 @@ const EMMY_CATEGORIES = [
       { year: 2023, show: "Succession", wonSeason: 4 },
       { year: 2024, show: "Shōgun", wonSeason: 1 },
       { year: 2025, show: "The Pitt", wonSeason: 1 },
+      { year: 2026, show: "The Pitt", wonSeason: 2 },
     ],
   },
   {
@@ -90,6 +91,7 @@ const EMMY_CATEGORIES = [
       { year: 2023, show: "The Bear", wonSeason: 1 },
       { year: 2024, show: "Hacks", wonSeason: 3 },
       { year: 2025, show: "The Studio", wonSeason: 1 },
+      { year: 2026, show: "Widow's Bay", wonSeason: 1 },
     ],
   },
   {
@@ -112,6 +114,7 @@ const EMMY_CATEGORIES = [
       { year: 2023, show: "Beef" },
       { year: 2024, show: "Baby Reindeer" },
       { year: 2025, show: "Adolescence" },
+      { year: 2026, show: "DTF St. Louis" },
     ],
   },
   {
@@ -218,6 +221,7 @@ const SHOW_SEASONS = {
   "The Bear": [8, 10, 10, 10, 8], // S5 (final season) released June 2026
   "Hacks": [10, 8, 9, 10, 10],
   "The Studio": [10],
+  "Widow's Bay": [10], // renewed for S2 (2027), not yet released
 
   "Downton Abbey": [7, 8, 7, 8, 8, 8],
   "Fargo": [10, 10, 10, 11, 10],
@@ -236,6 +240,7 @@ const SHOW_SEASONS = {
   "Baby Reindeer": [7],
   "Adolescence": [4],
   "Watchmen": [9],
+  "DTF St. Louis": [7],
 
   // Shown under Best TV Movie even though these are full returning
   // series — the winning entry was a movie-length special/episode, but
